@@ -4,6 +4,8 @@
 
 A real-time QR code region detection tool based on `OpenCV`. It is designed to solve the problem of QR code recognition where finder patterns are missing due to physical damage or occlusion. Unlike traditional decoders, this project can deduce the complete QR code region even when only two finder patterns are detected, and it outputs a corrected, clear image, providing high-quality input for subsequent decoding.
 
+![](./example.png)
+
 ## Core Features
 
 - **Finder Pattern Detection**: Utilizes an optimized contour filtering algorithm to accurately identify QR code finder patterns within an image.
