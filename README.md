@@ -1,26 +1,28 @@
 # Robust-QR-Code-Detector
 
-一个基于`OpenCV`的实时二维码区域检测工具。用于解决因物理损坏或遮挡而导致定位点缺失的二维码识别问题。与传统的解码器不同，本项目即使在只检测到两个定位点的情况下，也能通过几何学推断出二维码的完整区域，并输出校正后的清晰图像，为后续解码提供高质量的输入。
+[简体中文](./README.zh-CN.md)
 
-## 核心特性
+A real-time QR code region detection tool based on `OpenCV`. It is designed to solve the problem of QR code recognition where finder patterns are missing due to physical damage or occlusion. Unlike traditional decoders, this project can deduce the complete QR code region even when only two finder patterns are detected, and it outputs a corrected, clear image, providing high-quality input for subsequent decoding.
 
-- **定位点检测**：采用优化的轮廓筛选算法，能够准确识别出图像中的二维码定位点。
+## Core Features
 
-- **几何推断**：当三个定位点不完整时，能通过已有的定位点和几何关系推算出缺失的角点。
+- **Finder Pattern Detection**: Utilizes an optimized contour filtering algorithm to accurately identify QR code finder patterns within an image.
 
-- **自动透视校正**：将倾斜、扭曲的二维码区域校正为标准的正方形图像。
+- **Geometric Deduction**: When the three finder patterns are incomplete, it can deduce the missing corner points using the existing ones and their geometric relationships.
 
-- **图像增强处理**：对提取出的二维码进行锐化和亮度/对比度调整，提高可读性。
+- **Automatic Perspective Correction**: Corrects skewed and distorted QR code regions into a standard square image.
 
-- **实时交互界面**：通过摄像头实时捕捉画面，并提供简单易用的键盘快捷键进行操作。
+- **Image Enhancement**: Applies sharpening and adjusts brightness/contrast to the extracted QR code, improving readability.
 
-## 用途
+- **Real-time Interactive Interface**: Captures footage from a camera in real-time and provides easy-to-use keyboard shortcuts for operation.
 
-物理损坏或遮挡导致定位点缺失的二维码识别
+## Use Case
 
-## 快速开始
+Recognizing QR codes with missing finder patterns due to physical damage or occlusion.
 
-### 依赖项
+## Quick Start
+
+### Dependencies
 
 `OpenCV` (`cv2`)
 
@@ -28,58 +30,58 @@
 
 `Pillow` (`PIL`)
 
-### 安装
+### Installation
 
-你可以使用`pip`安装所有依赖：
+You can install all dependencies using `pip`：
 
 ```shell
 pip install opencv-python numpy Pillow
 ```
 
-### 运行
+### Running the Program
 
 ```shell
 python main.py
 ```
 
-### 使用说明
+### Instructions for Use
 
-程序启动后会打开摄像头窗口，以下是可用的快捷键：
+When the program starts, a camera window will open. The following keyboard shortcuts are available:
 
-| 按键 | 功能 | 说明 |
+| Key | Function | Description |
 | -------- | -------- | -------- |
-|`f`|冻结帧|在检测到二维码时，按下 f 键可以冻结当前画面|
-|`t`|旋转方向|在冻结状态下，按下 t 键可以旋转检测到的二维码图像方向。|
-|`c`|取消冻结|在冻结状态下，按下 c 键可以取消冻结，恢复实时检测。|
-|`s`|保存图片|在冻结状态下，按下 s 键可以保存处理后的二维码图像到本地。|
-|`q`|退出程序|随时按下 q 键可以安全退出程序。|
+|`f`|Freeze Frame|When a QR code is detected, press `f` to freeze the current frame.|
+|`t`|Rotate Direction|While frozen, press `t` to rotate the detected QR code image.|
+|`c`|Unfreeze|While frozen, press `c` to unfreeze and resume real-time detection.|
+|`s`|Save Image|While frozen, press `s` to save the processed QR code image to your local drive.|
+|`q`|Exit Program|Press `q` at any time to safely exit the program.|
 
 
-## 工作原理简述
+## Brief Summary of Working Principle
 
-1. **轮廓检测**：对输入的摄像头帧进行二值化处理，并通过 `cv2.findContours`找到所有轮廓。
+1. **Contour Detection**: The input camera frame is binarized, and all contours are found using `cv2.findContours`.
 
-2. **定位点筛选**：利用`cv2.RETR_TREE`模式获取的轮廓层级关系，筛选出具有三层嵌套结构的同心正方形，这些即为潜在的二维码定位点。
+2. **Finder Pattern Filtering**: Using the hierarchical relationships of contours obtained with `cv2.RETR_TREE mode`, concentric squares with a three-layer nested structure are filtered out. These are identified as potential QR code finder patterns.
 
-3. **几何分析**：
+3. **Geometric Analysis**:
 
-    - **三点情况**：如果找到三个定位点，根据它们构成的等腰直角三角形关系，确定左上、右上和左下三个角点。
+    - **Three-Point Case**: If three finder patterns are found, the top-left, top-right, and bottom-left corner points are determined based on their relationship as an isosceles right triangle.
 
-    - **两点情况**：如果只找到两个定位点，假定它们是左上和右上，并通过向量旋转和加法推算出左下和右下角点。
+    - **Two-Point Case**: If only two finder patterns are found, they are assumed to be the top-left and top-right points, and the bottom-left and bottom-right corner points are deduced through vector rotation and addition.
 
-4. **透视变换**：使用这四个角点作为源坐标，通过`cv2.getPerspectiveTransform`和`cv2.warpPerspective`将二维码区域拉平校正。
+4. **Perspective Transformation**: Using these four corner points as source coordinates, `cv2.getPerspectiveTransform` and `cv2.warpPerspective` are used to flatten and correct the QR code region.
 
-5. **图像优化**：对校正后的图像进行亮度、对比度调整和锐化，以获得最佳的黑白二值图像，方便后续解码库进行识别。
+5. **Image Optimization**: The corrected image is adjusted for brightness, contrast, and sharpened to obtain an optimal black-and-white binary image, which facilitates recognition by subsequent decoding libraries.
 
-## 故障处理
+## Troubleshooting
 
-### 显示`????`
-为了正确显示中文提示信息，你需要下载一个中文字体文件（例如 [NotoSansSC-VariableFont_wght.ttf](https://fonts.google.com/noto/specimen/Noto+Sans+SC)）并将其放在项目根目录。如果没有，程序会自动回退到默认字体，但中文可能无法正常显示。
+### Displaying `????`
+To correctly display Chinese text, you need to download a Chinese font file (e.g., [NotoSansSC-VariableFont_wght.ttf](https://fonts.google.com/noto/specimen/Noto+Sans+SC)) and place it in the project's root directory. If the font is not present, the program will automatically fall back to the default font, but Chinese characters may not display correctly.
 
-### 没有检测到定位点
+### No Finder Patterns Detected
 
-多种情况影响，可能是锐化程度、动态模糊等等导致，需自行调整参数或算法解决。
+This can be influenced by various factors, such as the level of sharpening, motion blur, etc. You may need to manually adjust parameters or the algorithm to resolve this.
 
-## 许可证
+## License
 
 This project is licensed under the MIT License.
